@@ -1,0 +1,347 @@
+{
+    // =============================================================================
+    // Droy Language - VS Code Tasks
+    // =============================================================================
+    // These tasks can be run from the command palette (Ctrl+Shift+P -> Tasks)
+    // =============================================================================
+    
+    "version": "2.0.0",
+    "tasks": [
+        // =============================================================================
+        // Build Tasks
+        // =============================================================================
+        {
+            "label": "CMake: Configure",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-B", "build",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "-DBUILD_TESTS=ON",
+                "-DBUILD_EXAMPLES=ON"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Configure CMake build"
+        },
+        {
+            "label": "CMake: Build",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "build",
+                "--parallel"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Build the project with CMake",
+            "dependsOn": "CMake: Configure"
+        },
+        {
+            "label": "Make: Build",
+            "type": "shell",
+            "command": "make",
+            "args": [],
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Build the project with Make"
+        },
+        {
+            "label": "Make: Debug Build",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "BUILD_TYPE=debug"
+            ],
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Build debug version"
+        },
+        {
+            "label": "Make: Release Build",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "BUILD_TYPE=release"
+            ],
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Build release version"
+        },
+        {
+            "label": "Make: Clean",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "clean"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Clean build artifacts"
+        },
+        
+        // =============================================================================
+        // Test Tasks
+        // =============================================================================
+        {
+            "label": "Test: All",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "test"
+            ],
+            "group": "test",
+            "problemMatcher": [],
+            "detail": "Run all tests",
+            "dependsOn": "CMake: Build"
+        },
+        {
+            "label": "Test: CTest",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--test-dir", "build",
+                "--output-on-failure"
+            ],
+            "group": "test",
+            "problemMatcher": [],
+            "detail": "Run tests with CTest",
+            "dependsOn": "CMake: Build"
+        },
+        {
+            "label": "Test: Lexer",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "test-lexer"
+            ],
+            "group": "test",
+            "problemMatcher": [],
+            "detail": "Run lexer tests"
+        },
+        {
+            "label": "Test: Parser",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "test-parser"
+            ],
+            "group": "test",
+            "problemMatcher": [],
+            "detail": "Run parser tests"
+        },
+        
+        // =============================================================================
+        // Code Quality Tasks
+        // =============================================================================
+        {
+            "label": "Format: All",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "format"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Format all source files"
+        },
+        {
+            "label": "Lint: All",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "lint"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Run all linters"
+        },
+        {
+            "label": "Check: All",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "check"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Run all checks"
+        },
+        
+        // =============================================================================
+        // Example Tasks
+        // =============================================================================
+        {
+            "label": "Examples: Run All",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "examples"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Run all example programs",
+            "dependsOn": "CMake: Build"
+        },
+        {
+            "label": "Examples: Hello",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/bin/droy-helper",
+            "args": [
+                "${workspaceFolder}/examples/hello.droy"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Run hello world example",
+            "dependsOn": "CMake: Build"
+        },
+        
+        // =============================================================================
+        // Installation Tasks
+        // =============================================================================
+        {
+            "label": "Install: Local",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "install"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Install to /usr/local",
+            "dependsOn": "CMake: Build"
+        },
+        {
+            "label": "Uninstall: Local",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "uninstall"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Uninstall from /usr/local"
+        },
+        
+        // =============================================================================
+        // Docker Tasks
+        // =============================================================================
+        {
+            "label": "Docker: Build",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+                "build"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Build Docker images"
+        },
+        {
+            "label": "Docker: Run Dev",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+                "run",
+                "--rm",
+                "dev"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Run development container"
+        },
+        {
+            "label": "Docker: Run Tests",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+                "run",
+                "--rm",
+                "test"
+            ],
+            "group": "test",
+            "problemMatcher": [],
+            "detail": "Run tests in Docker"
+        },
+        
+        // =============================================================================
+        // Documentation Tasks
+        // =============================================================================
+        {
+            "label": "Docs: Generate",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "docs"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Generate documentation"
+        },
+        {
+            "label": "Docs: Serve",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": [
+                "up",
+                "docs"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Serve documentation locally"
+        },
+        
+        // =============================================================================
+        // Utility Tasks
+        // =============================================================================
+        {
+            "label": "Info: Project",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "info"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Show project information"
+        },
+        {
+            "label": "Coverage: Generate",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "coverage"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Generate code coverage report"
+        },
+        {
+            "label": "Dist: Create",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "dist"
+            ],
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "Create distribution archive"
+        }
+    ],
+    
+    // =============================================================================
+    // Input Variables
+    // =============================================================================
+    "inputs": [
+        {
+            "id": "buildType",
+            "type": "pickString",
+            "description": "Build type",
+            "options": ["Debug", "Release", "RelWithDebInfo"],
+            "default": "Debug"
+        }
+    ]
+}

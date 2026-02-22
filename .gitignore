@@ -1,0 +1,43 @@
+# Build artifacts
+bin/
+obj/
+lib/
+dist/
+build/
+*.o
+*.a
+*.so
+*.dll
+*.exe
+*.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Droy specific
+.droy/
+droy_modules/
+droy.lock
+*.log
+
+# Test outputs
+test_output/
+coverage/
+*.gcov
+
+# Documentation build
+docs/_build/
+docs/api/
+
+# Temporary files
+*.tmp
+*.temp
+*.cache

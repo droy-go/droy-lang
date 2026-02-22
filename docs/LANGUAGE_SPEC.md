@@ -2,312 +2,404 @@
 
 ## Overview
 
-Droy is a modern markup and programming language designed for simplicity and power. It combines the ease of use of scripting languages with the performance of compiled languages.
+Droy is a markup and programming language designed for simplicity and power. It combines the readability of markup languages with the expressiveness of programming languages.
+
+## Lexical Structure
+
+### Tokens
+
+#### Keywords
+- `set`, `~s` - Variable assignment
+- `ret`, `~r` - Return statement
+- `em`, `~e` - Expression emission
+- `text`, `txt`, `t` - Text output
+- `fe` - If condition
+- `f` - Function definition
+- `for` - For loop
+- `sty` - Style block
+- `pkg` - Package declaration
+- `media` - Media element
+- `link` - Link definition
+- `a-link` - Anchor link
+- `yoex--links` - Extended links
+- `link-go` - Navigate link
+- `create-link` - Create link
+- `open-link` - Open link
+- `api` - API endpoint
+- `id` - Identifier
+- `block` - Block definition
+- `key` - Block key
+
+#### Operators
+- `+` - Addition / String concatenation
+- `-` - Subtraction
+- `*` - Multiplication
+- `/` - Division
+- `=` - Assignment
+
+#### Special Variables
+- `@si` - System Integer
+- `@ui` - User Integer
+- `@yui` - Dynamic Variable
+- `@pop` - Pop Variable
+- `@abc` - Alphabet Variable
+
+#### Commands
+- `*/employment` - Employment status command
+- `*/Running` - Running state command
+- `*/pressure` - Pressure level command
+- `*/lock` - Lock command
+
+### Literals
+
+#### String Literals
+Strings are enclosed in double or single quotes:
+```droy
+"Hello, World!"
+'Single quoted string'
+```
+
+#### Number Literals
+Numbers can be integers or floating-point:
+```droy
+42
+3.14159
+```
+
+#### Comments
+Single-line comments start with `//`:
+```droy
+// This is a comment
+```
+
+Multi-line comments use `/* */`:
+```droy
+/* This is a
+   multi-line comment */
+```
 
 ## Syntax
 
-### Comments
+### Program Structure
 
+A Droy program consists of a sequence of statements:
 ```droy
-// Single-line comment
-
-/*
- * Multi-line comment
- */
+statement1
+statement2
+...
 ```
 
-### Variables
+### Statements
 
+#### Variable Declaration
 ```droy
-// Using shorthand
-~s name = "value"      // set
-~r result             // return
-~e expression         // emit
+set variable_name = value
+~s variable_name = value
+```
 
-// Using keywords
-set name = "value"
-ret result
+#### Return Statement
+```droy
+ret expression
+~r expression
+```
+
+#### Emission Statement
+```droy
 em expression
+~e expression
 ```
 
-### Data Types
-
-#### Numbers
+#### Text Statement
 ```droy
-~s integer = 42
-~s floating = 3.14159
-~s negative = -10
-~s scientific = 1.5e10
+text expression
+txt expression
+t expression
 ```
 
-#### Strings
+### Expressions
+
+#### Primary Expressions
+- Literals: `"string"`, `42`, `3.14`
+- Variables: `variable_name`, `@si`, `@ui`
+
+#### Binary Expressions
 ```droy
-~s single = 'hello'
-~s double = "hello"
-~s escaped = "line1\nline2"
-~s interpolated = "Hello, ${name}!"
+expression + expression   // Addition / Concatenation
+expression - expression   // Subtraction
+expression * expression   // Multiplication
+expression / expression   // Division
 ```
 
-#### Booleans
+#### Assignment Expression
 ```droy
-~s flag = true
-~s other = false
-```
-
-#### Null
-```droy
-~s nothing = null
-```
-
-#### Arrays
-```droy
-~s numbers = [1, 2, 3, 4, 5]
-~s mixed = [1, "two", 3.0, true]
-~s nested = [[1, 2], [3, 4]]
-```
-
-#### Objects
-```droy
-~s person = {
-    name: "John",
-    age: 30,
-    active: true
-}
-```
-
-### Operators
-
-#### Arithmetic
-```droy
-+   // Addition
--   // Subtraction
-*   // Multiplication
-/   // Division
-%   // Modulo
-**  // Power
-```
-
-#### Comparison
-```droy
-==  // Equal
-!=  // Not equal
-<   // Less than
->   // Greater than
-<=  // Less than or equal
->=  // Greater than or equal
-```
-
-#### Logical
-```droy
-and // Logical AND
-or  // Logical OR
-not // Logical NOT
-```
-
-#### Assignment
-```droy
-=   // Assign
-+=  // Add and assign
--=  // Subtract and assign
-*=  // Multiply and assign
-/=  // Divide and assign
+variable = expression
 ```
 
 ### Control Flow
 
-#### If Statements
+#### For Loop
 ```droy
-fe (condition) {
-    // code
-}
-
-fe (condition) {
-    // code
-} else {
-    // code
-}
-
-fe (condition1) {
-    // code
-} else fe (condition2) {
-    // code
-} else {
-    // code
+for variable in expression {
+    statements
 }
 ```
 
-#### For Loops
+### Link System
+
+#### Link Definition
 ```droy
-// C-style
-for (~s i = 0; i < 10; i = i + 1) {
-    // code
-}
-
-// For-in
-for (item in array) {
-    // code
-}
+link id: "identifier" api: "url"
 ```
 
-#### While Loops
+#### Link Operations
 ```droy
-while (condition) {
-    // code
+create-link: "identifier"
+open-link: "identifier"
+link-go: "identifier"
+```
+
+### Block System
+
+#### Block Definition
+```droy
+block: key(parameters) {
+    statements
 }
 ```
 
-#### Break and Continue
-```droy
-break     // Exit loop
-continue  // Skip to next iteration
-```
+### Styling
 
-### Functions
-
+#### Style Block
 ```droy
-// Function definition
-f name(param1, param2) {
-    // code
-    ret value
+sty {
+    set property = value
+    statements
 }
-
-// Function call
-name(arg1, arg2)
-
-// Anonymous function
-f (x) { ret x * 2 }
 ```
 
-### Modules
+### Media
 
+#### Media Element
 ```droy
-// Package declaration
-pkg "my-package"
-
-// Import
-import "module"
-import "module" as alias
-use "module"
-require "module"
-
-// Export
-export name
-export f name() { }
+media "url"
+media id: "identifier" api: "url"
 ```
 
-### Special Variables
+### Packages
 
-| Variable | Description |
-|----------|-------------|
-| `@si` | System integer/string |
-| `@ui` | User interface variable |
-| `@yui` | Dynamic user input |
-| `@pop` | Pop/stack variable |
-| `@abc` | Alphabet/string buffer |
-| `@argc` | Argument count |
-| `@argv` | Argument vector |
-| `@env` | Environment variables |
-
-## Grammar
-
-### EBNF
-
-```ebnf
-program         ::= statement*
-
-statement       ::= variable_decl
-                  | function_decl
-                  | if_stmt
-                  | for_stmt
-                  | while_stmt
-                  | break_stmt
-                  | continue_stmt
-                  | return_stmt
-                  | expression_stmt
-                  | block
-
-variable_decl   ::= ("set" | "~s") identifier "=" expression
-
-function_decl   ::= "f" identifier "(" params? ")" block
-
-params          ::= identifier ("," identifier)*
-
-if_stmt         ::= "fe" "(" expression ")" statement ("else" statement)?
-
-for_stmt        ::= "for" "(" for_init? ";" expression? ";" for_update? ")" statement
-                  | "for" "(" identifier "in" expression ")" statement
-
-while_stmt      ::= "while" "(" expression ")" statement
-
-break_stmt      ::= "break"
-
-continue_stmt   ::= "continue"
-
-return_stmt     ::= ("ret" | "~r") expression?
-
-expression_stmt ::= expression
-
-block           ::= "{" statement* "}"
-
-expression      ::= assignment
-
-assignment      ::= identifier "=" expression
-                  | identifier ("+=" | "-=" | "*=" | "/=") expression
-
-logical_or      ::= logical_and ("or" logical_and)*
-
-logical_and     ::= equality ("and" equality)*
-
-equality        ::= comparison (("==" | "!=") comparison)*
-
-comparison      ::= term (("<" | ">" | "<=" | ">=") term)*
-
-term            ::= factor (("+" | "-") factor)*
-
-factor          ::= unary (("*" | "/" | "%") unary)*
-
-unary           ::= ("-" | "not") unary
-                  | power
-
-power           ::= primary ("**" unary)?
-
-primary         ::= number
-                  | string
-                  | boolean
-                  | null
-                  | identifier
-                  | "(" expression ")"
-                  | array_literal
-                  | object_literal
-                  | function_call
-                  | member_access
-                  | index_access
-
-array_literal   ::= "[" (expression ("," expression)*)? "]"
-
-object_literal  ::= "{" (pair ("," pair)*)? "}"
-
-pair            ::= (identifier | string) ":" expression
-
-function_call   ::= identifier "(" arguments? ")"
-
-arguments       ::= expression ("," expression)*
-
-member_access   ::= primary "." identifier
-
-index_access    ::= primary "[" expression "]"
-
-identifier      ::= [a-zA-Z_][a-zA-Z0-9_]*
-number          ::= [0-9]+ ("." [0-9]+)? ([eE] [+-]? [0-9]+)?
-string          ::= '"' [^"]* '"' | "'" [^']* "'"
-boolean         ::= "true" | "false"
-null            ::= "null"
+#### Package Declaration
+```droy
+pkg "package-name"
 ```
 
-## Built-in Functions
+## Semantics
 
-See [BUILTINS.md](BUILTINS.md) for complete list.
+### Variable Scope
 
-## Standard Library
+Variables are dynamically scoped within their block context. Special variables (`@si`, `@ui`, etc.) have global scope.
 
-See [STDLIB.md](STDLIB.md) for standard library documentation.
+### Type System
+
+Droy uses dynamic typing:
+- Numbers are stored as double-precision floating-point
+- Strings are UTF-8 encoded
+- Links are objects with `id`, `url`, `api`, and `is_open` properties
+
+### Expression Evaluation
+
+#### Arithmetic Operations
+- Numbers are evaluated using floating-point arithmetic
+- String concatenation with `+` operator
+
+#### Variable Resolution
+1. Check local scope
+2. Check special variables
+3. Return default value if not found
+
+### Command Execution
+
+Commands modify the interpreter state:
+- `*/employment` - Sets employment status to active
+- `*/Running` - Sets running state to true
+- `*/pressure` - Increments pressure level
+- `*/lock` - Sets locked state to true
+
+## Examples
+
+### Basic Program
+```droy
+// Set variables
+set greeting = "Hello"
+set name = "Droy"
+
+// Output
+text greeting + ", " + name + "!"
+
+// Return
+ret greeting + " " + name
+```
+
+### Math Operations
+```droy
+set x = 10
+set y = 5
+
+set sum = x + y
+set diff = x - y
+set prod = x * y
+set quot = x / y
+
+em "Results: " + sum + ", " + diff + ", " + prod + ", " + quot
+```
+
+### Link Management
+```droy
+// Define links
+link id: "home" api: "https://example.com"
+link id: "api" api: "https://api.example.com"
+
+// Create and open
+create-link: "home"
+open-link: "home"
+link-go: "home"
+
+// Execute commands
+*/employment
+*/Running
+*/lock
+```
+
+### Block Definition
+```droy
+block: key("main", "container") {
+    set title = "Main Block"
+    text title
+    
+    sty {
+        set color = "blue"
+        set font = "large"
+        em "Styled: " + color + ", " + font
+    }
+}
+```
+
+## Implementation Details
+
+### Lexer
+
+The lexer tokenizes source code into a stream of tokens. It handles:
+- Keywords and identifiers
+- Operators and delimiters
+- String and number literals
+- Comments
+- Special variables and commands
+
+### Parser
+
+The parser constructs an Abstract Syntax Tree (AST) from tokens. It implements:
+- Recursive descent parsing
+- Operator precedence
+- Error recovery
+
+### Interpreter
+
+The interpreter executes the AST:
+- Expression evaluation
+- Variable management
+- Link operations
+- Command execution
+
+### LLVM Backend
+
+The LLVM backend compiles Droy to LLVM IR:
+- Code generation
+- Optimization
+- Target-specific compilation
+
+## Grammar (BNF)
+
+```bnf
+program ::= statement*
+
+statement ::= set_stmt
+            | ret_stmt
+            | em_stmt
+            | text_stmt
+            | for_stmt
+            | link_stmt
+            | sty_stmt
+            | pkg_stmt
+            | media_stmt
+            | block_stmt
+            | command_stmt
+            | expr_stmt
+
+set_stmt ::= ("set" | "~s") identifier "=" expression
+
+ret_stmt ::= ("ret" | "~r") expression
+
+em_stmt ::= ("em" | "~e") expression
+
+text_stmt ::= ("text" | "txt" | "t") expression
+
+for_stmt ::= "for" identifier "in" expression block
+
+link_stmt ::= "link" link_properties
+            | "a-link" link_properties
+            | "yoex--links" link_properties
+            | "create-link" ":" string
+            | "open-link" ":" string
+            | "link-go" ":" string
+
+link_properties ::= ("id" ":" string | "api" ":" string)*
+
+sty_stmt ::= "sty" block
+
+pkg_stmt ::= "pkg" expression
+
+media_stmt ::= "media" (string | media_properties)
+
+media_properties ::= ("id" ":" string | "api" ":" string)*
+
+block_stmt ::= "block" ":" "key" "(" param_list ")" block
+
+param_list ::= identifier ("," identifier)*
+
+command_stmt ::= "*/employment"
+               | "*/Running"
+               | "*/pressure"
+               | "*/lock"
+
+block ::= "{" statement* "}"
+
+expression ::= term (("+" | "-") term)*
+
+term ::= factor (("*" | "/") factor)*
+
+factor ::= ("+" | "-") factor
+         | primary
+
+primary ::= number
+          | string
+          | identifier
+          | special_var
+          | "(" expression ")"
+
+special_var ::= "@si" | "@ui" | "@yui" | "@pop" | "@abc"
+
+identifier ::= [a-zA-Z_][a-zA-Z0-9_-]*
+
+number ::= [0-9]+ ("." [0-9]+)?
+
+string ::= "\"" [^"]* "\""
+         | "'" [^']* "'"
+```
+
+## Future Enhancements
+
+- Type annotations
+- Module system
+- Exception handling
+- Async/await
+- Standard library
+- Package manager

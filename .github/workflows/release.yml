@@ -1,0 +1,247 @@
+# =============================================================================
+# Droy Language - Release Automation
+# =============================================================================
+# This workflow automates the release process for the Droy language compiler.
+# It builds binaries for multiple platforms, creates release notes, and
+# publishes the release on GitHub.
+#
+# Trigger: Push of version tags (v*)
+# =============================================================================
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0)'
+        required: true
+        type: string
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  # ==========================================================================
+  # Build Linux Release
+  # ==========================================================================
+  build-linux:
+    runs-on: ubuntu-22.04
+    name: Build Linux Release
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          llvm \
+          llvm-dev \
+          libllvm-ocaml-dev \
+          cmake \
+          make
+    
+    - name: Build
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_TESTS=OFF \
+          -DBUILD_EXAMPLES=OFF
+        cmake --build build --config Release -j$(nproc)
+    
+    - name: Package
+      run: |
+        mkdir -p dist/droy-lang-linux
+        cp build/bin/droy-helper dist/droy-lang-linux/
+        cp -r include dist/droy-lang-linux/
+        cp README.md LICENSE dist/droy-lang-linux/
+        cd dist && tar -czf droy-lang-linux-amd64.tar.gz droy-lang-linux
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-release
+        path: dist/*.tar.gz
+
+  # ==========================================================================
+  # Build macOS Release
+  # ==========================================================================
+  build-macos:
+    runs-on: macos-latest
+    name: Build macOS Release
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        brew install llvm cmake || true
+        brew link llvm --force || true
+    
+    - name: Build
+      run: |
+        export LLVM_DIR=$(brew --prefix llvm)/lib/cmake/llvm
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DLLVM_DIR=$LLVM_DIR \
+          -DBUILD_TESTS=OFF \
+          -DBUILD_EXAMPLES=OFF
+        cmake --build build --config Release -j$(sysctl -n hw.ncpu)
+    
+    - name: Package
+      run: |
+        mkdir -p dist/droy-lang-macos
+        cp build/bin/droy-helper dist/droy-lang-macos/
+        cp -r include dist/droy-lang-macos/
+        cp README.md LICENSE dist/droy-lang-macos/
+        cd dist && tar -czf droy-lang-macos-amd64.tar.gz droy-lang-macos
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-release
+        path: dist/*.tar.gz
+
+  # ==========================================================================
+  # Build Windows Release
+  # ==========================================================================
+  build-windows:
+    runs-on: windows-latest
+    name: Build Windows Release
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup MSVC
+      uses: microsoft/setup-msbuild@v2
+    
+    - name: Build
+      run: |
+        cmake -B build `
+          -DCMAKE_BUILD_TYPE=Release `
+          -DBUILD_TESTS=OFF `
+          -DBUILD_EXAMPLES=OFF
+        cmake --build build --config Release --parallel
+    
+    - name: Package
+      run: |
+        New-Item -ItemType Directory -Force -Path dist\droy-lang-windows
+        Copy-Item build\bin\Release\droy-helper.exe dist\droy-lang-windows\
+        Copy-Item -Recurse include dist\droy-lang-windows\
+        Copy-Item README.md dist\droy-lang-windows\
+        Copy-Item LICENSE dist\droy-lang-windows\
+        Compress-Archive -Path dist\droy-lang-windows -DestinationPath dist\droy-lang-windows-amd64.zip
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-release
+        path: dist/*.zip
+
+  # ==========================================================================
+  # Generate Release Notes
+  # ==========================================================================
+  generate-notes:
+    runs-on: ubuntu-latest
+    name: Generate Release Notes
+    outputs:
+      notes: ${{ steps.notes.outputs.content }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Generate changelog
+      id: notes
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        if [ -z "$VERSION" ]; then
+          VERSION="v${{ github.event.inputs.version }}"
+        fi
+        
+        echo "content<<EOF" >> $GITHUB_OUTPUT
+        echo "# Droy Language $VERSION" >> $GITHUB_OUTPUT
+        echo "" >> $GITHUB_OUTPUT
+        
+        # Get changes since last tag
+        LAST_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+        if [ -n "$LAST_TAG" ]; then
+          echo "## Changes since $LAST_TAG" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          git log --pretty=format:"- %s" $LAST_TAG..HEAD >> $GITHUB_OUTPUT
+        else
+          echo "## Initial Release" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          git log --pretty=format:"- %s" >> $GITHUB_OUTPUT
+        fi
+        echo "" >> $GITHUB_OUTPUT
+        echo "## Installation" >> $GITHUB_OUTPUT
+        echo "" >> $GITHUB_OUTPUT
+        echo '```bash' >> $GITHUB_OUTPUT
+        echo '# Linux/macOS' >> $GITHUB_OUTPUT
+        echo "tar -xzf droy-lang-*-amd64.tar.gz" >> $GITHUB_OUTPUT
+        echo "cd droy-lang-*" >> $GITHUB_OUTPUT
+        echo "sudo cp droy-helper /usr/local/bin/" >> $GITHUB_OUTPUT
+        echo '```' >> $GITHUB_OUTPUT
+        echo "" >> $GITHUB_OUTPUT
+        echo "## SHA256 Checksums" >> $GITHUB_OUTPUT
+        echo "See checksums.txt in the release assets." >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+  # ==========================================================================
+  # Create Release
+  # ==========================================================================
+  create-release:
+    runs-on: ubuntu-latest
+    name: Create Release
+    needs: [build-linux, build-macos, build-windows, generate-notes]
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+    
+    - name: Generate checksums
+      run: |
+        cd artifacts
+        find . -type f \( -name "*.tar.gz" -o -name "*.zip" \) -exec sha256sum {} \; > checksums.txt
+        cat checksums.txt
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        body: ${{ needs.generate-notes.outputs.notes }}
+        files: |
+          artifacts/**/*
+        draft: false
+        prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ==========================================================================
+  # Update Homebrew Formula (if applicable)
+  # ==========================================================================
+  update-homebrew:
+    runs-on: ubuntu-latest
+    name: Update Homebrew Formula
+    needs: create-release
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta')
+    
+    steps:
+    - name: Trigger Homebrew update
+      run: |
+        echo "Homebrew formula update would be triggered here"
+        echo "This requires a separate tap repository"

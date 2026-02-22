@@ -1,0 +1,281 @@
+# =============================================================================
+# Droy Language - Git Attributes File
+# =============================================================================
+# This file defines attributes per path for Git.
+# For more information: https://git-scm.com/docs/gitattributes
+# =============================================================================
+
+# =============================================================================
+# Auto detect text files and perform LF normalization
+# =============================================================================
+* text=auto
+
+# =============================================================================
+# Source Code Files
+# =============================================================================
+# C/C++ source files
+*.c     text eol=lf linguist-language=C
+*.cpp   text eol=lf linguist-language=C++
+*.cc    text eol=lf linguist-language=C++
+*.cxx   text eol=lf linguist-language=C++
+*.h     text eol=lf linguist-language=C
+*.hpp   text eol=lf linguist-language=C++
+*.hh    text eol=lf linguist-language=C++
+*.hxx   text eol=lf linguist-language=C++
+*.inl   text eol=lf linguist-language=C++
+
+# Assembly files
+*.s     text eol=lf linguist-language=Assembly
+*.S     text eol=lf linguist-language=Assembly
+*.asm   text eol=lf linguist-language=Assembly
+
+# LLVM IR
+*.ll    text eol=lf linguist-language=LLVM
+*.bc    binary linguist-language=LLVM
+
+# =============================================================================
+# Build System Files
+# =============================================================================
+# CMake
+*.cmake         text eol=lf linguist-language=CMake
+CMakeLists.txt  text eol=lf linguist-language=CMake
+
+# Make
+Makefile        text eol=lf linguist-language=Makefile
+*.mk            text eol=lf linguist-language=Makefile
+*.make          text eol=lf linguist-language=Makefile
+
+# Ninja
+build.ninja     text eol=lf
+
+# =============================================================================
+# Script Files
+# =============================================================================
+# Shell scripts
+*.sh    text eol=lf linguist-language=Shell
+*.bash  text eol=lf linguist-language=Shell
+*.zsh   text eol=lf linguist-language=Shell
+*.fish  text eol=lf linguist-language=Shell
+
+# Windows batch files
+*.bat   text eol=crlf linguist-language=Batchfile
+*.cmd   text eol=crlf linguist-language=Batchfile
+*.ps1   text eol=crlf linguist-language=PowerShell
+
+# Python
+*.py    text eol=lf linguist-language=Python
+*.pyw   text eol=lf linguist-language=Python
+
+# Perl
+*.pl    text eol=lf linguist-language=Perl
+*.pm    text eol=lf linguist-language=Perl
+
+# Ruby
+*.rb    text eol=lf linguist-language=Ruby
+
+# =============================================================================
+# Web Files
+# =============================================================================
+# HTML
+*.html  text eol=lf linguist-language=HTML
+*.htm   text eol=lf linguist-language=HTML
+
+# CSS
+*.css   text eol=lf linguist-language=CSS
+*.scss  text eol=lf linguist-language=SCSS
+*.sass  text eol=lf linguist-language=Sass
+*.less  text eol=lf linguist-language=Less
+
+# JavaScript
+*.js    text eol=lf linguist-language=JavaScript
+*.mjs   text eol=lf linguist-language=JavaScript
+*.jsx   text eol=lf linguist-language=JSX
+
+# TypeScript
+*.ts    text eol=lf linguist-language=TypeScript
+*.tsx   text eol=lf linguist-language=TSX
+
+# JSON
+*.json  text eol=lf linguist-language=JSON
+*.jsonc text eol=lf linguist-language=JSON with Comments
+
+# YAML
+*.yml   text eol=lf linguist-language=YAML
+*.yaml  text eol=lf linguist-language=YAML
+
+# XML
+*.xml   text eol=lf linguist-language=XML
+*.xsd   text eol=lf linguist-language=XML
+*.xsl   text eol=lf linguist-language=XSLT
+*.xslt  text eol=lf linguist-language=XSLT
+
+# SVG
+*.svg   text eol=lf linguist-language=SVG
+
+# Markdown
+*.md    text eol=lf linguist-language=Markdown
+*.markdown text eol=lf linguist-language=Markdown
+*.mdown text eol=lf linguist-language=Markdown
+*.mkd   text eol=lf linguist-language=Markdown
+
+# reStructuredText
+*.rst   text eol=lf linguist-language=reStructuredText
+
+# =============================================================================
+# Documentation Files
+# =============================================================================
+# Plain text
+*.txt   text eol=lf
+
+# License files
+LICENSE*        text eol=lf
+COPYING*        text eol=lf
+AUTHORS*        text eol=lf
+CONTRIBUTORS*   text eol=lf
+
+# Man pages
+*.1     text eol=lf
+*.2     text eol=lf
+*.3     text eol=lf
+*.4     text eol=lf
+*.5     text eol=lf
+*.6     text eol=lf
+*.7     text eol=lf
+*.8     text eol=lf
+*.9     text eol=lf
+
+# =============================================================================
+# Configuration Files
+# =============================================================================
+# EditorConfig
+.editorconfig   text eol=lf
+
+# Git
+.gitattributes  text eol=lf
+.gitignore      text eol=lf
+.gitconfig      text eol=lf
+.gitmodules     text eol=lf
+
+# Docker
+Dockerfile      text eol=lf linguist-language=Dockerfile
+*.dockerfile    text eol=lf linguist-language=Dockerfile
+docker-compose*.yml text eol=lf linguist-language=YAML
+.dockerignore   text eol=lf
+
+# CI/CD
+*.travis.yml    text eol=lf
+.appveyor.yml   text eol=lf
+.gitlab-ci.yml  text eol=lf
+
+# =============================================================================
+# Droy Language Files
+# =============================================================================
+# Droy source files
+*.droy  text eol=lf linguist-language=Droy
+*.droyh text eol=lf linguist-language=Droy
+
+# =============================================================================
+# Binary Files
+# =============================================================================
+# Archives
+*.7z    binary
+*.bz2   binary
+*.gz    binary
+*.jar   binary
+*.rar   binary
+*.tar   binary
+*.zip   binary
+*.xz    binary
+
+# Images
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.bmp   binary
+*.ico   binary
+*.svgz  binary
+*.tif   binary
+*.tiff  binary
+*.webp  binary
+
+# Audio
+*.mp3   binary
+*.ogg   binary
+*.wav   binary
+*.flac  binary
+*.aac   binary
+*.wma   binary
+
+# Video
+*.mp4   binary
+*.avi   binary
+*.mov   binary
+*.wmv   binary
+*.flv   binary
+*.mkv   binary
+*.webm  binary
+
+# Documents
+*.pdf   binary
+*.doc   binary
+*.docx  binary
+*.xls   binary
+*.xlsx  binary
+*.ppt   binary
+*.pptx  binary
+*.odt   binary
+*.ods   binary
+*.odp   binary
+
+# Fonts
+*.eot   binary
+*.otf   binary
+*.ttf   binary
+*.woff  binary
+*.woff2 binary
+
+# Executables
+*.exe   binary
+*.dll   binary
+*.so    binary
+*.dylib binary
+*.bin   binary
+
+# Object files
+*.o     binary
+*.obj   binary
+*.a     binary
+*.lib   binary
+
+# =============================================================================
+# Diff Configuration
+# =============================================================================
+# Better diff for specific file types
+*.cpp   diff=cpp
+*.hpp   diff=cpp
+*.c     diff=cpp
+*.h     diff=cpp
+*.py    diff=python
+*.rb    diff=ruby
+*.js    diff=javascript
+*.html  diff=html
+*.md    diff=markdown
+
+# =============================================================================
+# Export Ignore (for git archive)
+# =============================================================================
+# These files/directories are excluded when creating archives
+.github/        export-ignore
+.travis.yml     export-ignore
+.gitattributes  export-ignore
+.gitignore      export-ignore
+.gitmodules     export-ignore
+.editorconfig   export-ignore
+*.yml           export-ignore
+*.yaml          export-ignore
+/tests/         export-ignore
+/docs/          export-ignore
+/examples/      export-ignore
+scripts/        export-ignore
+build/          export-ignore

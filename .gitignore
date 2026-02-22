@@ -1,43 +1,316 @@
-# Build artifacts
-bin/
-obj/
-lib/
-dist/
-build/
+# =============================================================================
+# Droy Language - Git Ignore File
+# =============================================================================
+# This file specifies intentionally untracked files that Git should ignore.
+# For more information: https://git-scm.com/docs/gitignore
+# =============================================================================
+
+# =============================================================================
+# Build Artifacts
+# =============================================================================
+# Compiled object files
 *.o
+*.obj
+*.ko
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
 *.a
-*.so
+*.la
+*.lo
 *.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
 *.exe
 *.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+*.bin
 
-# IDE
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# =============================================================================
+# Build Directories
+# =============================================================================
+/build/
+/cmake-build-*/
+/out/
+/Debug/
+/Release/
+/RelWithDebInfo/
+/MinSizeRel/
+/x64/
+/x86/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+Makefile.cmake
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# =============================================================================
+# IDE and Editor Files
+# =============================================================================
+# Visual Studio
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.user
+*.suo
+*.cache
+ipch/
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+
+# Visual Studio Code
 .vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+
+# CLion
 .idea/
+*.iml
+*.iws
+cmake-build-*/
+
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+# Eclipse
+.project
+.cproject
+.settings/
+*.pydevproject
+
+# NetBeans
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
 *.swp
 *.swo
 *~
+.netrwhist
 
-# OS
-.DS_Store
-Thumbs.db
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
 
-# Droy specific
-.droy/
-droy_modules/
-droy.lock
+# Nano
+*.save
+
+# =============================================================================
+# Testing and Coverage
+# =============================================================================
+# Test outputs
+/test-results/
+/test-output/
+*.test
+
+# Coverage
+*.gcov
+*.gcno
+*.gcda
+*.gcno
+coverage/
+coverage-report/
+*.info
+coverage.info
+htmlcov/
+
+# Valgrind
+*.valgrind
+valgrind-report.txt
 *.log
 
-# Test outputs
-test_output/
-coverage/
-*.gcov
+# Sanitizers
+*.asan
+*.msan
+*.tsan
+*.ubsan
 
-# Documentation build
-docs/_build/
-docs/api/
+# =============================================================================
+# Package Manager Files
+# =============================================================================
+# Conan
+conanbuildinfo.txt
+conanbuildinfo.cmake
+conan.lock
+graph_info.json
 
-# Temporary files
+# Vcpkg
+vcpkg_installed/
+
+# =============================================================================
+# OS Generated Files
+# =============================================================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.nfs*
+
+# =============================================================================
+# Temporary Files
+# =============================================================================
 *.tmp
 *.temp
-*.cache
+*.bak
+*.backup
+*.orig
+*.rej
+*.diff
+*.patch
+
+# =============================================================================
+# Logs
+# =============================================================================
+*.log
+logs/
+log/
+
+# =============================================================================
+# Documentation Build
+# =============================================================================
+/docs/html/
+/docs/latex/
+/docs/xml/
+/docs/man/
+/site/
+/doxygen-docs/
+
+# =============================================================================
+# Distribution
+# =============================================================================
+/dist/
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.zip
+*.7z
+*.deb
+*.rpm
+*.pkg
+*.dmg
+
+# =============================================================================
+# Language Specific
+# =============================================================================
+# LLVM IR
+*.ll
+*.bc
+
+# Assembly
+*.s
+*.S
+
+# =============================================================================
+# Project Specific
+# =============================================================================
+# Binary output directory
+/bin/
+!/bin/.gitkeep
+
+# Object directory
+/obj/
+!/obj/.gitkeep
+
+# Generated files
+/generated/
+*.generated.cpp
+*.generated.h
+
+# Database files (if using Droy database)
+*.droydb
+*.droydb-journal
+
+# =============================================================================
+# Secrets and Configuration (NEVER commit these!)
+# =============================================================================
+.env
+.env.local
+.env.*.local
+secrets/
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+config.local.json
+
+# =============================================================================
+# Keep these empty directories
+# =============================================================================
+!.gitkeep

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Droy Code Editor - Professional IDE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+    <link rel="stylesheet" href="editor.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">◈</span>
+                <span class="logo-text">Droy Editor</span>
+                <span class="version">v1.0.0</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" id="btn-new">New File</button>
+                <button class="btn btn-secondary" id="btn-open">Open</button>
+                <button class="btn btn-secondary" id="btn-save">Save</button>
+                <button class="btn btn-primary" id="btn-run">▶ Run</button>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3>Explorer</h3>
+                    <div class="file-tree" id="file-tree">
+                        <div class="folder expanded">
+                            <span class="folder-icon">📁</span>
+                            <span class="folder-name">examples</span>
+                            <div class="folder-contents">
+                                <div class="file" data-file="hello.droy">📄 hello.droy</div>
+                                <div class="file" data-file="variables.droy">📄 variables.droy</div>
+                                <div class="file" data-file="math.droy">📄 math.droy</div>
+                                <div class="file" data-file="links.droy">📄 links.droy</div>
+                                <div class="file" data-file="blocks.droy">📄 blocks.droy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Documentation</h3>
+                    <div class="doc-links">
+                        <a href="#" class="doc-link" data-doc="syntax">Syntax Guide</a>
+                        <a href="#" class="doc-link" data-doc="commands">Commands</a>
+                        <a href="#" class="doc-link" data-doc="variables">Variables</a>
+                        <a href="#" class="doc-link" data-doc="links">Links System</a>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Editor Area -->
+            <div class="editor-area">
+                <!-- Tabs -->
+                <div class="tabs" id="tabs">
+                    <div class="tab active" data-file="untitled.droy">
+                        <span class="tab-name">untitled.droy</span>
+                        <span class="tab-close">×</span>
+                    </div>
+                </div>
+
+                <!-- Code Editor -->
+                <div class="editor-container">
+                    <textarea id="code-editor"></textarea>
+                </div>
+
+                <!-- Bottom Panel -->
+                <div class="bottom-panel">
+                    <div class="panel-tabs">
+                        <button class="panel-tab active" data-panel="output">Output</button>
+                        <button class="panel-tab" data-panel="tokens">Tokens</button>
+                        <button class="panel-tab" data-panel="ast">AST</button>
+                        <button class="panel-tab" data-panel="console">Console</button>
+                    </div>
+                    <div class="panel-content">
+                        <div class="panel-pane active" id="output-panel">
+                            <pre id="output-content"></pre>
+                        </div>
+                        <div class="panel-pane" id="tokens-panel">
+                            <pre id="tokens-content"></pre>
+                        </div>
+                        <div class="panel-pane" id="ast-panel">
+                            <pre id="ast-content"></pre>
+                        </div>
+                        <div class="panel-pane" id="console-panel">
+                            <pre id="console-content"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <footer class="status-bar">
+            <div class="status-left">
+                <span class="status-item" id="cursor-pos">Ln 1, Col 1</span>
+                <span class="status-item" id="file-type">Droy</span>
+            </div>
+            <div class="status-right">
+                <span class="status-item" id="encoding">UTF-8</span>
+                <span class="status-item" id="line-ending">LF</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="file-input" accept=".droy" style="display: none;">
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/javascript-hint.min.js"></script>
+    <script src="droy-mode.js"></script>
+    <script src="editor.js"></script>
+</body>
+</html>

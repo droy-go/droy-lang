@@ -1,0 +1,147 @@
+# =============================================================================
+# Droy Language - Clang-Format Configuration
+# =============================================================================
+# This file defines the code formatting style for the Droy Language project.
+# Based on LLVM style with customizations for consistency.
+#
+# Usage:
+#   clang-format -i file.cpp    # Format a file in place
+#   clang-format file.cpp       # Output formatted code to stdout
+# =============================================================================
+
+---
+Language: Cpp
+BasedOnStyle: LLVM
+
+# =============================================================================
+# Indentation
+# =============================================================================
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 4
+ConstructorInitializerIndentWidth: 4
+
+# =============================================================================
+# Line Breaking
+# =============================================================================
+ColumnLimit: 100
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterObjCDeclaration: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortLambdasOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: Yes
+
+# =============================================================================
+# Spacing
+# =============================================================================
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 2
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# =============================================================================
+# Alignment
+# =============================================================================
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: Right
+AlignOperands: true
+AlignTrailingComments: true
+
+# =============================================================================
+# Includes
+# =============================================================================
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Standard library headers
+  - Regex: '<[a-z_]+>'
+    Priority: 1
+    SortPriority: 1
+  # LLVM headers
+  - Regex: '<llvm/.*>'
+    Priority: 2
+    SortPriority: 2
+  # Project headers
+  - Regex: '"droy/.*"'
+    Priority: 3
+    SortPriority: 3
+  # Other headers
+  - Regex: '.*'
+    Priority: 4
+    SortPriority: 4
+
+# =============================================================================
+# Pointer and Reference Alignment
+# =============================================================================
+PointerAlignment: Left
+ReferenceAlignment: Pointer
+
+# =============================================================================
+# Other Settings
+# =============================================================================
+AccessModifierOffset: -4
+BinPackArguments: false
+BinPackParameters: false
+BreakConstructorInitializers: BeforeColon
+BreakInheritanceList: BeforeColon
+CompactNamespaces: false
+Cpp11BracedListStyle: true
+DerivePointerAlignment: false
+FixNamespaceComments: true
+IndentCaseLabels: true
+IndentPPDirectives: AfterHash
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: None
+ReflowComments: true
+SortUsingDeclarations: true
+Standard: c++17
+
+# =============================================================================
+# Penalties (affect line breaking decisions)
+# =============================================================================
+PenaltyBreakAssignment: 2
+PenaltyBreakBeforeFirstCallParameter: 19
+PenaltyBreakComment: 300
+PenaltyBreakFirstLessLess: 120
+PenaltyBreakString: 1000
+PenaltyBreakTemplateDeclaration: 10
+PenaltyExcessCharacter: 1000000
+PenaltyReturnTypeOnItsOwnLine: 60
+---

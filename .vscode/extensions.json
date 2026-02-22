@@ -1,0 +1,120 @@
+{
+    // =============================================================================
+    // Droy Language - VS Code Extensions Recommendations
+    // =============================================================================
+    // These extensions are recommended for working on the Droy Language project.
+    // VS Code will prompt you to install them when you open the project.
+    // =============================================================================
+    
+    "recommendations": [
+        // =============================================================================
+        // Essential Extensions
+        // =============================================================================
+        
+        // C/C++ support
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        
+        // CMake support
+        "ms-vscode.cmake-tools",
+        "twxs.cmake",
+        
+        // =============================================================================
+        // Code Quality
+        // =============================================================================
+        
+        // clangd for better C++ language support
+        "llvm-vs-code-extensions.vscode-clangd",
+        
+        // Code formatting
+        "xaver.clang-format",
+        
+        // =============================================================================
+        // Debugging
+        // =============================================================================
+        
+        // Native debugging
+        "ms-vscode.cpptools",
+        
+        // CodeLLDB for better LLDB integration on macOS/Linux
+        "vadimcn.vscode-lldb",
+        
+        // =============================================================================
+        // Git
+        // =============================================================================
+        
+        // GitLens for enhanced Git capabilities
+        "eamodio.gitlens",
+        
+        // Git Graph for visualizing Git history
+        "mhutchie.git-graph",
+        
+        // =============================================================================
+        // Documentation
+        // =============================================================================
+        
+        // Markdown support
+        "yzhang.markdown-all-in-one",
+        
+        // Markdown linting
+        "davidanson.vscode-markdownlint",
+        
+        // =============================================================================
+        // Productivity
+        // =============================================================================
+        
+        // Better comments
+        "aaron-bond.better-comments",
+        
+        // Bracket pair colorizer (built-in in newer VS Code)
+        // "coenraads.bracket-pair-colorizer",
+        
+        // Path intellisense
+        "christian-kohler.path-intellisense",
+        
+        // TODO highlighting
+        "gruntfuggly.todo-tree",
+        
+        // =============================================================================
+        // Themes and Icons
+        // =============================================================================
+        
+        // Material Icon Theme
+        "pkief.material-icon-theme",
+        
+        // Material Theme
+        "equinusocio.vsc-material-theme",
+        
+        // =============================================================================
+        // Optional Extensions
+        // =============================================================================
+        
+        // Spell checker
+        "streetsidesoftware.code-spell-checker",
+        
+        // YAML support
+        "redhat.vscode-yaml",
+        
+        // Docker support
+        "ms-azuretools.vscode-docker",
+        
+        // Remote development
+        "ms-vscode-remote.remote-ssh",
+        "ms-vscode-remote.remote-containers",
+        
+        // Live Share for pair programming
+        "ms-vsliveshare.vsliveshare"
+    ],
+    
+    // =============================================================================
+    // Unwanted Extensions (to avoid conflicts)
+    // =============================================================================
+    
+    "unwantedRecommendations": [
+        // Avoid conflicts with clangd
+        "ms-vscode.cpptools-intellisense",
+        
+        // Avoid outdated extensions
+        "ms-vscode.cmake-tools-0.0.1"
+    ]
+}

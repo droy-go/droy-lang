@@ -1,0 +1,25 @@
+# Droy Language - Package Configuration
+# =====================================
+
+name = "droy-lang"
+version = "2.0.0"
+description = "A modern markup and programming language"
+author = "Droy Language Team"
+license = "MIT"
+repository = "https://github.com/droy-go/droy-lang"
+homepage = "https://droy-lang.org"
+keywords = ["language", "programming", "markup", "compiler"]
+droy_version = ">=2.0.0"
+main = "src/main.droy"
+
+[scripts]
+build = "make"
+test = "make test"
+run = "droy run"
+clean = "make clean"
+
+[dependencies]
+# No dependencies for core language
+
+[devDependencies]
+# Development dependencies

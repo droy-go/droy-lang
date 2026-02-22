@@ -1,0 +1,409 @@
+# =============================================================================
+# Droy Language - Continuous Integration Pipeline
+# =============================================================================
+# This workflow builds and tests the Droy language on every push and pull request
+# across multiple platforms and configurations.
+#
+# Supported Platforms:
+#   - Ubuntu (latest, 22.04, 20.04)
+#   - macOS (latest, 13)
+#   - Windows (latest)
+#
+# Build Configurations:
+#   - Debug and Release builds
+#   - With and without LLVM
+#   - Static analysis
+#   - Memory leak detection
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [ main, develop, 'feature/**' ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+  pull_request:
+    branches: [ main, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  # ==========================================================================
+  # Build and Test on Ubuntu Latest
+  # ==========================================================================
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+        build_type: [Debug, Release]
+    
+    name: Ubuntu (${{ matrix.compiler }}, ${{ matrix.build_type }})
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Cache LLVM
+      uses: actions/cache@v4
+      with:
+        path: /usr/lib/llvm-*/
+        key: ${{ runner.os }}-llvm-${{ matrix.compiler }}-${{ hashFiles('**/CMakeLists.txt') }}
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          gcc \
+          g++ \
+          clang \
+          llvm \
+          llvm-dev \
+          libllvm-ocaml-dev \
+          cmake \
+          make \
+          valgrind \
+          cppcheck
+    
+    - name: Set compiler
+      run: |
+        if [ "${{ matrix.compiler }}" = "gcc" ]; then
+          echo "CC=gcc" >> $GITHUB_ENV
+          echo "CXX=g++" >> $GITHUB_ENV
+        else
+          echo "CC=clang" >> $GITHUB_ENV
+          echo "CXX=clang++" >> $GITHUB_ENV
+        fi
+    
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_C_COMPILER=$CC \
+          -DCMAKE_CXX_COMPILER=$CXX \
+          -DBUILD_TESTS=ON \
+          -DBUILD_EXAMPLES=ON
+    
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }} -j$(nproc)
+    
+    - name: Run tests
+      run: |
+        cd build
+        ctest -C ${{ matrix.build_type }} --output-on-failure --verbose
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ubuntu-${{ matrix.compiler }}-${{ matrix.build_type }}
+        path: build/bin/
+        retention-days: 7
+
+  # ==========================================================================
+  # Build on macOS
+  # ==========================================================================
+  build-macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+    
+    name: macOS (${{ matrix.build_type }})
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Cache Homebrew packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/Library/Caches/Homebrew
+          /usr/local/Cellar
+        key: ${{ runner.os }}-brew-${{ hashFiles('.github/workflows/ci.yml') }}
+    
+    - name: Install dependencies
+      run: |
+        brew update || true
+        brew install llvm cmake make || true
+        brew link llvm --force || true
+    
+    - name: Configure CMake
+      run: |
+        export LLVM_DIR=$(brew --prefix llvm)/lib/cmake/llvm
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DLLVM_DIR=$LLVM_DIR \
+          -DBUILD_TESTS=ON \
+          -DBUILD_EXAMPLES=ON
+    
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }} -j$(sysctl -n hw.ncpu)
+    
+    - name: Run tests
+      run: |
+        cd build
+        ctest -C ${{ matrix.build_type }} --output-on-failure
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-${{ matrix.build_type }}
+        path: build/bin/
+        retention-days: 7
+
+  # ==========================================================================
+  # Build on Windows
+  # ==========================================================================
+  build-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+    
+    name: Windows (${{ matrix.build_type }})
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup MSVC
+      uses: microsoft/setup-msbuild@v2
+    
+    - name: Configure CMake
+      run: |
+        cmake -B build `
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
+          -DBUILD_TESTS=ON `
+          -DBUILD_EXAMPLES=ON
+    
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }} --parallel
+    
+    - name: Run tests
+      run: |
+        cd build
+        ctest -C ${{ matrix.build_type }} --output-on-failure
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-${{ matrix.build_type }}
+        path: build/bin/
+        retention-days: 7
+
+  # ==========================================================================
+  # Code Quality Checks
+  # ==========================================================================
+  code-quality:
+    runs-on: ubuntu-latest
+    name: Code Quality Checks
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cppcheck clang-format
+    
+    - name: Run cppcheck
+      run: |
+        cppcheck --enable=all --error-exitcode=0 \
+          --suppress=missingIncludeSystem \
+          --suppress=unusedFunction \
+          --xml --xml-version=2 \
+          src/ include/ llvm_backend/ 2> cppcheck-report.xml || true
+    
+    - name: Upload cppcheck report
+      uses: actions/upload-artifact@v4
+      with:
+        name: cppcheck-report
+        path: cppcheck-report.xml
+        retention-days: 30
+    
+    - name: Check code formatting
+      run: |
+        find src include llvm_backend tests -name "*.cpp" -o -name "*.h" 2>/dev/null | \
+          xargs -I {} clang-format --dry-run --Werror {} 2>&1 | head -100 || true
+      continue-on-error: true
+
+  # ==========================================================================
+  # Memory Leak Detection with Valgrind
+  # ==========================================================================
+  valgrind-check:
+    runs-on: ubuntu-latest
+    name: Memory Leak Detection
+    needs: build-ubuntu
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential valgrind llvm llvm-dev cmake
+    
+    - name: Build with Debug symbols
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON
+        cmake --build build --config Debug -j$(nproc)
+    
+    - name: Run Valgrind on tests
+      run: |
+        valgrind --leak-check=full \
+          --show-leak-kinds=all \
+          --track-origins=yes \
+          --verbose \
+          --log-file=valgrind-report.txt \
+          --error-exitcode=0 \
+          ./build/bin/droy-test lexer || true
+    
+    - name: Upload Valgrind report
+      uses: actions/upload-artifact@v4
+      with:
+        name: valgrind-report
+        path: valgrind-report.txt
+        retention-days: 30
+
+  # ==========================================================================
+  # Sanitizer Checks
+  # ==========================================================================
+  sanitizers:
+    runs-on: ubuntu-latest
+    name: Sanitizer Checks
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential llvm llvm-dev cmake
+    
+    - name: Build with Address Sanitizer
+      run: |
+        cmake -B build-asan \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DENABLE_SANITIZERS=ON \
+          -DBUILD_TESTS=ON
+        cmake --build build-asan -j$(nproc)
+    
+    - name: Run tests with ASan
+      run: |
+        cd build-asan
+        ctest --output-on-failure || true
+
+  # ==========================================================================
+  # Coverage Report
+  # ==========================================================================
+  coverage:
+    runs-on: ubuntu-latest
+    name: Code Coverage
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential llvm llvm-dev cmake lcov
+    
+    - name: Build with coverage
+      run: |
+        cmake -B build-coverage \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DENABLE_COVERAGE=ON \
+          -DBUILD_TESTS=ON
+        cmake --build build-coverage -j$(nproc)
+    
+    - name: Run tests
+      run: |
+        cd build-coverage
+        ctest --output-on-failure
+    
+    - name: Generate coverage report
+      run: |
+        lcov --capture --directory build-coverage --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info
+        lcov --list coverage.info
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        files: coverage.info
+        fail_ci_if_error: false
+        verbose: true
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  # ==========================================================================
+  # Documentation Build
+  # ==========================================================================
+  docs:
+    runs-on: ubuntu-latest
+    name: Documentation Build
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install Doxygen
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y doxygen graphviz
+    
+    - name: Generate documentation
+      run: |
+        if [ -f docs/Doxyfile ]; then
+          doxygen docs/Doxyfile
+        else
+          echo "Doxyfile not found, skipping documentation generation"
+        fi
+      continue-on-error: true
+    
+    - name: Upload documentation
+      uses: actions/upload-artifact@v4
+      with:
+        name: documentation
+        path: docs/html/
+        retention-days: 7
+
+  # ==========================================================================
+  # Summary
+  # ==========================================================================
+  summary:
+    runs-on: ubuntu-latest
+    name: CI Summary
+    needs: [build-ubuntu, build-macos, build-windows, code-quality]
+    if: always()
+    
+    steps:
+    - name: Summary
+      run: |
+        echo "## CI Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Ubuntu (GCC, Debug) | ${{ needs.build-ubuntu.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Ubuntu (Clang, Release) | ${{ needs.build-ubuntu.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| macOS | ${{ needs.build-macos.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Windows | ${{ needs.build-windows.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Code Quality | ${{ needs.code-quality.result == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY

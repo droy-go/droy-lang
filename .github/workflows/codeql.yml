@@ -1,0 +1,149 @@
+# =============================================================================
+# Droy Language - CodeQL Security Analysis
+# =============================================================================
+# This workflow runs GitHub's CodeQL analysis to detect security vulnerabilities
+# and coding errors in the Droy language compiler.
+#
+# For more information, see:
+# https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning-with-codeql
+# =============================================================================
+
+name: CodeQL
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run at 00:00 UTC every Sunday
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  # ==========================================================================
+  # Analyze C/C++ Code
+  # ==========================================================================
+  analyze-cpp:
+    name: Analyze C/C++
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'cpp' ]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        queries: security-extended,security-and-quality
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          llvm \
+          llvm-dev \
+          cmake \
+          make
+    
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+      with:
+        working-directory: .
+    
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
+        upload: true
+    
+    - name: Upload SARIF results
+      uses: actions/upload-artifact@v4
+      with:
+        name: codeql-sarif-${{ matrix.language }}
+        path: /home/runner/work/_temp/codeql_databases/
+        retention-days: 7
+
+  # ==========================================================================
+  # Analyze JavaScript (if applicable for web components)
+  # ==========================================================================
+  analyze-js:
+    name: Analyze JavaScript
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript
+        queries: security-extended
+    
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+    
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:javascript"
+
+  # ==========================================================================
+  # Dependency Review
+  # ==========================================================================
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      security-events: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Dependency Review
+      uses: actions/dependency-review-action@v4
+      with:
+        comment-summary-in-pr: true
+        fail-on-severity: moderate
+
+  # ==========================================================================
+  # Secret Scanning
+  # ==========================================================================
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Secret Detection
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+        extra_args: --debug --only-verified

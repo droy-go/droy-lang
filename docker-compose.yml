@@ -1,0 +1,112 @@
+# =============================================================================
+# Droy Language - Docker Compose Configuration
+# =============================================================================
+# This file defines services for running Droy Language in Docker containers.
+# =============================================================================
+
+version: '3.8'
+
+services:
+  # ==========================================================================
+  # Droy Compiler (Production)
+  # ==========================================================================
+  droy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: droy-lang:latest
+    container_name: droy-compiler
+    volumes:
+      - ./examples:/app/examples:ro
+      - ./output:/app/output
+    working_dir: /app
+    command: ["--help"]
+    
+  # ==========================================================================
+  # Droy Development Environment
+  # ==========================================================================
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    image: droy-lang:dev
+    container_name: droy-dev
+    volumes:
+      - .:/workspace
+      - build-cache:/workspace/build
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: ["/bin/bash"]
+    
+  # ==========================================================================
+  # Droy Testing Environment
+  # ==========================================================================
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: testing
+    image: droy-lang:test
+    container_name: droy-test
+    volumes:
+      - .:/workspace
+      - test-results:/workspace/test-results
+    working_dir: /workspace
+    command: ["cd", "build", "&&", "ctest", "--output-on-failure", "-V"]
+    
+  # ==========================================================================
+  # Documentation Server
+  # ==========================================================================
+  docs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    image: droy-lang:dev
+    container_name: droy-docs
+    volumes:
+      - ./docs:/workspace/docs
+      - ./site:/workspace/site
+    working_dir: /workspace
+    ports:
+      - "8000:8000"
+    command: >
+      bash -c "
+        pip3 install mkdocs mkdocs-material &&
+        cd docs &&
+        mkdocs serve --dev-addr=0.0.0.0:8000
+      "
+    
+  # ==========================================================================
+  # Valgrind Memory Check
+  # ==========================================================================
+  valgrind:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    image: droy-lang:dev
+    container_name: droy-valgrind
+    volumes:
+      - .:/workspace
+      - ./examples:/workspace/examples:ro
+    working_dir: /workspace
+    command: >
+      bash -c "
+        make debug &&
+        valgrind --leak-check=full --show-leak-kinds=all \\
+          --track-origins=yes --verbose \\
+          ./build/bin/droy-helper examples/hello.droy
+      "
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  build-cache:
+    driver: local
+  test-results:
+    driver: local

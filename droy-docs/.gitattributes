@@ -1,0 +1,11 @@
+# Droy Language - GitHub Linguist Configuration
+
+# Recognize .droy files
+*.droy linguist-language=Droy
+*.droy linguist-detectable=true
+
+# Documentation
+*.md linguist-documentation
+
+# Generated files (if any)
+dist/* linguist-generated

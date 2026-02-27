@@ -1,0 +1,27 @@
+{
+  "name": "droy-language",
+  "version": "3.0.0",
+  "description": "Droy Programming Language - Modern, expressive language with ultra-short syntax and UI components",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "droy",
+    "language",
+    "programming",
+    "ui",
+    "components",
+    "short-syntax"
+  ],
+  "author": "Droy Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/droy-go/droy-lang.git"
+  },
+  "bugs": {
+    "url": "https://github.com/droy-go/droy-lang/issues"
+  },
+  "homepage": "https://github.com/droy-go/droy-lang#readme"
+}
